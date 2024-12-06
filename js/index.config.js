@@ -24,15 +24,15 @@ __export(index_config_exports, {
 module.exports = __toCommonJS(index_config_exports);
 var index_config_default = {
   ali: {
-    token: "复制https://alist.nn.ci/zh/guide/drivers/aliyundrive.html 到浏览器打开，截图用阿里云盘扫码获取",
-    token280: "去https://messense-aliyundrive-webdav-backendrefresh-token-ucs0wn.streamlit.app/地址获取，填入280位token，截屏扫码好像不行，用摄像头扫码识别"
+    token: "bc0d45199f6c43988583bb86178ba648",
+    token280: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIzNTEzNTdmNGEwNmM0ZGNhYTYxYWM3YThhZjAzMmZkZSIsImF1ZCI6IjczZTYxMTgzMWE3YzRkODdhYzQ5Yzg0ODFiZjlmMmM0IiwiZXhwIjoxNzQxMjkwNjA1LCJpYXQiOjE3MzM1MTQ2MDUsImp0aSI6IjUzZDA1YjdiZDVjNjQ3MTFhYTY4MjZiMzIyNTFjNGVlIn0.xcnVe394DQnr2uShBu9sTq2Rni_V2R8K2Z3-L8f-ByBRIpGBHAzW8dglofcXt85qSonUVaWUwHk98KJNgu6PHA"
   },
   quark: {
-    cookie: "去https://h5.sm.cn/blm/mobile-entry-97/index#/，将浏览器设为PC模式，获取你的夸克cookie覆盖填入此处，形如_UP_A4A_11_=开头的"
+    cookie: "ZMOZKeJdQrV2zKduXmy8eqF1"
   },
   yiso: {
     url: "https://yiso.fun",
-    cookie: "复制粘贴自己的易搜cookie，不要有空格换行，保留双引号"
+    cookie: ""
   },
   live: {
     contents: "https://gitee.com/galnt/cctv/raw/master/contents.txt",
