@@ -20,14 +20,14 @@
         "name": "🎥念心丨玩偶①",
         "type": 3,
        "api": "wogg_open.js",
-        "ext": "阿狸token码"
+        "ext": "bc0d45199f6c43988583bb86178ba648"
    }, 
    {
         "key": "wobg",
         "name": "🎥念心丨玩偶②",
         "type": 4,
         "api": "wobg_open.js",
-        "ext": "阿狸token码"
+        "ext": "bc0d45199f6c43988583bb86178ba648"
    },                   			
  {
         "key": "kkys",
