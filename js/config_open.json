@@ -368,63 +368,63 @@
         "name": "🔎念心丨盘寻",
         "type": 3,
         "api": "pansearch_open.js",
-        "ext": "阿狸token码"
+        "ext": "bc0d45199f6c43988583bb86178ba648"
     },
     {
         "key": "阿里盘搜",
         "name": "🔎念心丨盘搜",
         "type": 3,
         "api": "pansou_open.js",
-        "ext": "阿狸token码"
+        "ext": "bc0d45199f6c43988583bb86178ba648"
     },
     {
         "key": "阿里七夜",
         "name": "🔎念心丨七夜",
         "type": 3,
         "api": "dovx_open.js",
-        "ext": "阿狸token码"
+        "ext": "bc0d45199f6c43988583bb86178ba648"
     },
     {
         "key": "小纸条",
         "name": "🔎念心丨纸条",
         "type": 3,
         "api": "xiaozhitiao_open.js",
-        "ext": "阿狸token码"
+        "ext": "bc0d45199f6c43988583bb86178ba648"
     },
     {
         "key": "UP云搜",
         "name": "🔎念心丨云搜",
         "type": 3,
         "api": "upyun_open.js",
-        "ext": "阿狸token码"
+        "ext": "bc0d45199f6c43988583bb86178ba648"
     },
     {
         "key": "易搜",
         "name": "🔎念心丨易搜",
         "type": 3,
         "api": "yiso_open.js",
-        "ext": "阿狸token码$$$易搜账号cookie"
+        "ext": "bc0d45199f6c43988583bb86178ba648$$$易搜账号cookie"
     },
     {
         "key": "云盘4K",
         "name": "🔎念心丨云盘",
         "type": 3,
         "api": "yunpan4k_open.js",
-        "ext": "阿狸token码"
+        "ext": "bc0d45199f6c43988583bb86178ba648"
     },
     {
         "key": "找资源",
         "name": "🔎念心丨资源",
         "type": 3,
         "api": "zhaozy_open.js",
-        "ext": "阿狸token码$$$找资源账号$$$找资源密码"
+        "ext": "bc0d45199f6c43988583bb86178ba648$$$找资源账号$$$找资源密码"
     },
     {
         "key": "夸克趣盘搜",
         "name": "🔎念心丨夸克",
         "type": 3,
         "api": "funletu_open.js",
-        "ext": "夸克账号cookie，不会可以百度"
+        "ext": "_UP_A4A_11_=wb96c1f985bb4ad7a2526d933062a95a; _UP_D_=pc; _UP_F7E_8D_=OU7RkS5Fl8AoeL141fLWKhIRC%2B%2BAZcLHx22r2YZ2ERRpI9RVa4ukHLzAOAWntCUnocMHDTQSSiFLHpvA%2Fhicy1HUTu2LBlCP7iSu6h7rwWURR7PkP6bIT5JCgtq0CedXq%2ByKzMDFQ4%2Fu60lxZuUY21tf5rwS7zMCkzpNsBL26JBQn8AHdbyGVBV9HcTOHTZorBPpSAl%2B19250nvnyjN2b9lGaLFNgjzvtSKvOiTvZ59edb29s7ixTekaCCKYp5qv6QIQfIQ26b0hcda6HPbptq%2FFufEPvHRf%2BTWJwwrgkSoGRq%2F1DpN7C3tZAoK5PsvMPNL3cTgkDDej%2Bhm3mVYTBUo6%2BhNj2Brxs1YxLzJs52mICuiPI2PVlc4oCTgvjBzfs1YxLzJs52mV0QP5E5cDiwUzKge2mfdZ6ftiEKZOtyls2i%2BxKaGo8Xjef0zUpNsX; __pus=34d273e01af272faf8d366da614ff644AATtN+UQObLaNMZbIY5voYEw7nTAE99kYAO6ZSxjPltxUsDGqnNKXAlNZ2tjCO8jHyFmZHTMLezNahtVbBJ+R39x; __kp=4172a500-b415-11ef-93e4-bbb8c75ec7c7; __kps=AASryEg56DEZQRSRoDrmBc4T; __ktd=PSb06HOvEHtv2/6kjYYTRQ==; __uid=AASryEg56DEZQRSRoDrmBc4T; __itrace_wid=8573b6d5-8266-4155-3891-31d1e479d657; __puus=17fdc9a60ac3e1e59aae583a735088f0AASHnqw6jB0k6qhLzuow0VKoSrZHTFemx/E91VWzGt1JA9s3B7888W+qHiY3b5+EpOzczIWUwVhNSWoEdha75kKiaYNgseEZLEkZngpiXlyGIzrfMB0WtOQE4lyXSkckVbsqyuTBUcR6PCySyGQmTskZ0rVxinTl+h5amHQlQ46bRKB1AlFspaR5as4rpr46p8lknrdO8S4rwQ6Sd/XOmKsw"
   }     
     ]
   },
