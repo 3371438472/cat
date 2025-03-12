@@ -20,6 +20,22 @@
             z-index: -1;
         }
 
+        .particle {
+            position: absolute;
+            background: #2ecc71;
+            width: 3px;
+            height: 3px;
+            opacity: 0.7;
+            filter: blur(1px);
+            animation: float 10s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20vh) rotate(180deg); }
+            100% { transform: translateY(0) rotate(360deg); }
+        }
+
         /* 手机端布局优化 */
         @media (max-width: 768px) {
             .header {
@@ -67,42 +83,27 @@
             }
         }
 
-        /* 保留原有PC端样式... */
+        /* 原有PC端样式... */
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script>
-        // 动态粒子效果
-        const particles = [];
-        const count = 80;
-        
-        for (let i = 0; i < count; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.top = `${Math.random() * 100}%`;
-            particle.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
-            particle.style.width = `${Math.random() * 2 + 1}px`;
-            particle.style.height = `${Math.random() * 2 + 1}px`;
-            particle.style.opacity = Math.random();
-            particle.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
-            document.body.appendChild(particle);
-            particles.push(particle);
-        }
-
-        anime({
-            targets: '.particle',
-            translateX: (el, i) => `-${Math.random() * 200}px`,
-            translateY: (el, i) => `${Math.random() * 200}px`,
-            rotate: (el, i) => `${Math.random() * 360}deg`,
-            duration: 10000,
-            delay: (el, i) => i * 100,
-            loop: true,
-            easing: 'easeInOutQuad'
-        });
-    </script>
 </head>
 <body>
-    <div class="particles-bg"></div>
+    <div class="particles-bg">
+        <!-- 动态粒子 -->
+        <script>
+            const createParticles = (count) => {
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.animationDelay = `${Math.random() * 2}s`;
+                    document.querySelector('.particles-bg').appendChild(particle);
+                }
+            }
+
+            createParticles(80);
+        </script>
+    </div>
+
     <!-- 原有HTML结构保持不变 -->
 </body>
 </html>
