@@ -6,60 +6,59 @@
     <title>资源中心</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        .os-card {
+        /* 推荐模块样式 */
+        .recommended-card {
             display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 1rem;
+            grid-template-columns: 1fr 3fr;
+            gap: 1.5rem;
             align-items: center;
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+            background: white;
             transition: transform 0.3s ease;
         }
 
-        .os-card:hover {
-            transform: translateY(-5px);
+        .recommended-card:hover {
+            transform: translateY(-10px);
         }
 
-        .os-icon {
-            width: 80px;
-            height: 80px;
+        .recommended-icon {
+            width: 120px;
+            height: 120px;
             background-size: cover;
-            border-radius: 8px;
+            border-radius: 12px;
         }
 
-        .os-name {
-            font-size: 1.5rem;
+        .recommended-title {
+            font-size: 1.8rem;
             font-weight: bold;
             color: var(--primary-color);
+            margin-bottom: 0.5rem;
         }
 
-        .os-description {
+        .recommended-description {
             color: var(--light-text);
+            margin-bottom: 1rem;
         }
 
-        .download-btn {
-            background: var(--primary-color);
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .download-btn:hover {
-            background: #27ae60;
+        .tag {
+            background: var(--secondary-color);
+            color: var(--text-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
         }
 
         @media (max-width: 768px) {
-            .os-card {
+            .recommended-card {
                 grid-template-columns: 1fr;
                 text-align: center;
             }
 
-            .os-icon {
+            .recommended-icon {
                 margin: 0 auto;
             }
         }
@@ -73,7 +72,7 @@
     <header class="header">
         <h1>资源中心</h1>
         <nav class="nav">
-            <a href="/">主页</a>
+            <a href="/" id="homeLink">主页</a>
             <a href="/resource.html">资源</a>
             <a href="/tools.html">工具</a>
             <a href="/other.html">其他</a>
@@ -81,50 +80,98 @@
     </header>
 
     <main class="container">
+        <h2>推荐资源</h2>
+        <div class="tag-filter">
+            <span class="tag" data-filter="all">全部</span>
+            <span class="tag" data-filter="efficiency">效率工具</span>
+            <span class="tag" data-filter="design">设计工具</span>
+            <span class="tag" data-filter="development">开发工具</span>
+        </div>
+        <div class="recommended-cards" id="recommendedContainer"></div>
+        <button id="loadMoreBtn" class="download-btn" style="display: none;">加载更多</button>
+
         <h2>系统资源</h2>
         <div class="os-cards">
-            <div class="os-card">
-                <div class="os-icon" style="background-image: url('https://source.unsplash.com/random/80x80')"></div>
-                <div>
-                    <h3 class="os-name">安卓应用</h3>
-                    <p class="os-description">精选安卓应用资源</p>
-                    <button class="download-btn">下载</button>
-                </div>
-            </div>
-
-            <div class="os-card">
-                <div class="os-icon" style="background-image: url('https://source.unsplash.com/random/80x80')"></div>
-                <div>
-                    <h3 class="os-name">Windows软件</h3>
-                    <p class="os-description">实用Windows工具集合</p>
-                    <button class="download-btn">下载</button>
-                </div>
-            </div>
-
-            <div class="os-card">
-                <div class="os-icon" style="background-image: url('https://source.unsplash.com/random/80x80')"></div>
-                <div>
-                    <h3 class="os-name">iOS程序</h3>
-                    <p class="os-description">iOS开发相关资源</p>
-                    <button class="download-btn">下载</button>
-                </div>
-            </div>
-
-            <div class="os-card">
-                <div class="os-icon" style="background-image: url('https://source.unsplash.com/random/80x80')"></div>
-                <div>
-                    <h3 class="os-name">Mac工具</h3>
-                    <p class="os-description">MacOS专属应用推荐</p>
-                    <button class="download-btn">下载</button>
-                </div>
-            </div>
+            <!-- 原有系统资源卡片 -->
         </div>
     </main>
 
     <footer class="footer">
         <p>欲买桂花同载酒,终不似,少年游</p>
+        <p>Copyright © 2025 白术小站</p>
     </footer>
 
-    <script src="scripts.js"></script>
+    <script>
+        // 动态加载推荐内容
+        let currentPage = 1;
+        const perPage = 5;
+
+        async function loadRecommended(page) {
+            try {
+                const response = await fetch(`https://api.example.com/recommended?page=${page}`);
+                const data = await response.json();
+                
+                const container = document.getElementById('recommendedContainer');
+                data.forEach(item => {
+                    container.innerHTML += `
+                        <div class="recommended-card" data-category="${item.category}">
+                            <div class="recommended-icon" style="background-image: url(${item.icon})"></div>
+                            <div>
+                                <h3 class="recommended-title">${item.title}</h3>
+                                <p class="recommended-description">${item.description}</p>
+                                <div class="tags">
+                                    ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                </div>
+                                <button class="download-btn" onclick="downloadFile('${item.url}')">立即下载</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                currentPage++;
+                if (data.length < perPage) {
+                    document.getElementById('loadMoreBtn').style.display = 'none';
+                } else {
+                    document.getElementById('loadMoreBtn').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('加载推荐内容失败:', error);
+            }
+        }
+
+        // 分类过滤
+        document.querySelectorAll('.tag-filter .tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                const filter = tag.dataset.filter;
+                document.querySelectorAll('.recommended-card').forEach(card => {
+                    const category = card.dataset.category;
+                    card.style.display = filter === 'all' || category === filter ? 'grid' : 'none';
+                });
+            });
+        });
+
+        // 无限滚动
+        window.addEventListener('scroll', () => {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && 
+                document.getElementById('loadMoreBtn').style.display === 'block') {
+                loadRecommended(currentPage);
+            }
+        });
+
+        // 初始加载
+        loadRecommended(1);
+
+        // 文件下载功能
+        function downloadFile(url) {
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'resource.apk';
+                    link.click();
+                });
+        }
+    </script>
 </body>
 </html>
