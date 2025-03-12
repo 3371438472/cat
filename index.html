@@ -12,18 +12,10 @@
             --light-text: #666;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Noto Serif SC', serif;
-        }
-
         body {
             background: var(--secondary-color);
             color: var(--text-color);
             line-height: 1.8;
-            overflow-x: hidden;
         }
 
         .header {
@@ -128,6 +120,8 @@
                 color: var(--primary-color);
                 padding: 0.8rem 1.2rem;
                 border-radius: 24px;
+                width: 20%;
+                text-align: center;
             }
 
             .weather-info {
@@ -142,9 +136,9 @@
         <h1>白术小站</h1>
         <nav class="nav">
             <a href="/">主页</a>
-            <a href="/about">关于</a>
-            <a href="/friends">朋友</a>
-            <a href="/comments">留言</a>
+            <a href="/resource">资源</a>
+            <a href="/tools">工具</a>
+            <a href="/other">其他</a>
         </nav>
     </header>
 
@@ -165,30 +159,15 @@
             <div class="stats">
                 <div class="stat-item" id="currentTime"></div>
                 <div class="stat-item" id="currentDate"></div>
+                <div class="stat-item" id="currentDay"></div>
                 <div class="stat-item" id="runningDays"></div>
             </div>
         </section>
 
         <section class="content">
             <h2>分类记录</h2>
-            <div class="tags">
-                <a href="#" class="tag">全部</a>
-                <a href="#" class="tag">记录</a>
-                <a href="#" class="tag">思考</a>
-                <a href="#" class="tag">动态</a>
-            </div>
-
-            <article class="post-item">
-                <h3 class="post-title">项目开发记录</h3>
-                <div class="post-meta">2025-03-12</div>
-                <p>今日完成了天气模块的基础框架搭建</p>
-            </article>
-
-            <article class="post-item">
-                <h3 class="post-title">移动端适配测试</h3>
-                <div class="post-meta">2025-03-11</div>
-                <p>测试了安卓设备的布局显示效果</p>
-            </article>
+            <div class="tags" id="tagFilters"></div>
+            <div id="postsContainer"></div>
         </section>
     </main>
 
@@ -203,6 +182,7 @@
             const now = new Date();
             document.getElementById('currentTime').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             document.getElementById('currentDate').textContent = now.toLocaleDateString();
+            document.getElementById('currentDay').textContent = ['日','一','二','三','四','五','六'][now.getDay()] + ' 星期';
         }
         setInterval(updateTime, 1000);
         updateTime();
