@@ -10,12 +10,33 @@
             --secondary-color: #f0f2f5;
             --text-color: #333;
             --light-text: #666;
+            --dark-bg: #2c3e50;
+            --dark-text: #ecf0f1;
         }
 
         body {
             background: var(--secondary-color);
             color: var(--text-color);
             line-height: 1.8;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode {
+            background: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .dark-mode .nav a {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .dark-mode .weather-info {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .dark-mode .stat-item {
+            background: rgba(255,255,255,0.05);
         }
 
         .header {
@@ -101,18 +122,20 @@
             .header {
                 clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
                 padding: 1.5rem 1rem;
+                margin-bottom: 4rem;
             }
 
             .nav {
                 position: fixed;
-                bottom: 0;
+                top: 0;
                 left: 0;
                 right: 0;
                 background: white;
                 padding: 1rem;
-                box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+                box-shadow: 0 2px 12px rgba(0,0,0,0.1);
                 gap: 1.5rem;
                 justify-content: space-around;
+                z-index: 100;
             }
 
             .nav a {
@@ -122,11 +145,43 @@
                 border-radius: 24px;
                 width: 20%;
                 text-align: center;
+                transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+
+            .nav a:hover {
+                transform: scale(1.05);
+                box-shadow: 0 2px 8px rgba(46, 204, 113, 0.2);
             }
 
             .weather-info {
                 grid-template-columns: 1fr;
                 text-align: center;
+            }
+
+            .main-content {
+                margin-top: 4rem;
+            }
+        }
+
+        /* 夜间模式开关样式 */
+        #darkModeToggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        @media (max-width: 768px) {
+            #darkModeToggle {
+                top: 0.5rem;
+                right: 0.5rem;
+                padding: 0.3rem 0.8rem;
             }
         }
     </style>
@@ -134,13 +189,14 @@
 <body>
     <header class="header">
         <h1>白术小站</h1>
-        <nav class="nav">
-            <a href="/">主页</a>
-            <a href="/resource">资源</a>
-            <a href="/tools">工具</a>
-            <a href="/other">其他</a>
-        </nav>
     </header>
+
+    <nav class="nav">
+        <a href="/">主页</a>
+        <a href="/resource">资源</a>
+        <a href="/tools">工具</a>
+        <a href="/other">其他</a>
+    </nav>
 
     <main class="container">
         <section class="content">
@@ -163,12 +219,6 @@
                 <div class="stat-item" id="runningDays"></div>
             </div>
         </section>
-
-        <section class="content">
-            <h2>分类记录</h2>
-            <div class="tags" id="tagFilters"></div>
-            <div id="postsContainer"></div>
-        </section>
     </main>
 
     <footer class="footer">
@@ -176,13 +226,15 @@
         <p>Copyright © 2025 白术小站</p>
     </footer>
 
+    <button id="darkModeToggle">🌙 夜间模式</button>
+
     <script>
         // 实时时间更新
         function updateTime() {
             const now = new Date();
             document.getElementById('currentTime').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             document.getElementById('currentDate').textContent = now.toLocaleDateString();
-            document.getElementById('currentDay').textContent = ['日','一','二','三','四','五','六'][now.getDay()] + ' 星期';
+            document.getElementById('currentDay').textContent = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][now.getDay()];
         }
         setInterval(updateTime, 1000);
         updateTime();
@@ -224,6 +276,19 @@
             }
         }
         getWeather();
+
+        // 夜间模式切换
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        });
+
+        // 加载暗黑模式设置
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        });
     </script>
 </body>
 </html>
