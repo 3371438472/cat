@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能食堂管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .seat-indicator {
+                transition: all 0.3s ease;
+            }
+            .btn-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+            }
+            .fade-in {
+                animation: fadeIn 0.5s ease-in-out;
+            }
+            .pulse {
+                animation: pulse 2s infinite;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+            @keyframes pulse {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.5;
+                }
+            }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#00B42A',
+                        danger: '#F53F3F',
+                        warning: '#FF7D00',
+                        info: '#86909C',
+                        light: '#F2F3F5',
+                        dark: '#1D2129',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 font-sans text-dark">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-md fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-utensils text-primary text-2xl"></i>
+                <h1 class="text-xl md:text-2xl font-bold text-primary">智能食堂管理系统</h1>
+            </div>
+            <nav class="hidden md:flex space-x-6">
+                <a href="#seats" class="font-medium text-primary hover:text-primary/80 transition-colors">座位管理</a>
+                <a href="#order" class="font-medium text-gray-700 hover:text-primary transition-colors">点单系统</a>
+                <a href="#statistics" class="font-medium text-gray-700 hover:text-primary transition-colors">统计分析</a>
+                <a href="#hardware" class="font-medium text-gray-700 hover:text-primary transition-colors">硬件管理</a>
+            </nav>
+            <button class="md:hidden text-gray-700 focus:outline-none" id="mobile-menu-button">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+        <!-- 移动端菜单 -->
+        <div class="md:hidden hidden bg-white shadow-lg absolute w-full" id="mobile-menu">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="#seats" class="font-medium text-primary py-2 border-b border-gray-100">座位管理</a>
+                <a href="#order" class="font-medium text-gray-700 py-2 border-b border-gray-100">点单系统</a>
+                <a href="#statistics" class="font-medium text-gray-700 py-2 border-b border-gray-100">统计分析</a>
+                <a href="#hardware" class="font-medium text-gray-700 py-2">硬件管理</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 连接状态指示器 -->
+    <div id="connection-status" class="fixed bottom-4 right-4 z-50 p-3 rounded-lg bg-danger text-white hidden">
+        <i class="fa-solid fa-wifi mr-2"></i>
+        <span>未连接到硬件</span>
+    </div>
+
+    <!-- 主内容区域 -->
+    <main class="container mx-auto px-4 pt-24 pb-16">
+        <!-- 状态概览卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 fade-in">
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 font-medium">可用座位</p>
+                        <h3 class="text-3xl font-bold mt-1" id="available-seats">15</h3>
+                    </div>
+                    <div class="bg-secondary/10 p-3 rounded-full">
+                        <i class="fa-solid fa-chair text-secondary text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 h-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-secondary rounded-full" style="width: 75%;"></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 font-medium">今日订单</p>
+                        <h3 class="text-3xl font-bold mt-1" id="today-orders">42</h3>
+                    </div>
+                    <div class="bg-primary/10 p-3 rounded-full">
+                        <i class="fa-solid fa-list-alt text-primary text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 h-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary rounded-full" style="width: 60%;"></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 font-medium">今日收入</p>
+                        <h3 class="text-3xl font-bold mt-1" id="today-revenue">¥1,254</h3>
+                    </div>
+                    <div class="bg-amber-100 p-3 rounded-full">
+                        <i class="fa-solid fa-coins text-amber-500 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 h-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-amber-500 rounded-full" style="width: 45%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 座位管理模块 -->
+        <section id="seats" class="mb-16 scroll-mt-24">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl md:text-3xl font-bold">座位管理</h2>
+                <div class="flex space-x-3">
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg btn-hover" id="refresh-seats">
+                        <i class="fa-solid fa-refresh mr-2"></i>刷新状态
+                    </button>
+                    <button class="bg-secondary text-white px-4 py-2 rounded-lg btn-hover" id="auto-refresh">
+                        <i class="fa-solid fa-sync mr-2"></i>自动刷新
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-gray-100 p-4 rounded-lg flex justify-between items-center">
+                        <span class="font-medium">总座位数</span>
+                        <span class="font-bold">20</span>
+                    </div>
+                    <div class="bg-green-100 p-4 rounded-lg flex justify-between items-center">
+                        <span class="font-medium">可用</span>
+                        <span class="font-bold text-green-600">15</span>
+                    </div>
+                    <div class="bg-red-100 p-4 rounded-lg flex justify-between items-center">
+                        <span class="font-medium">已占用</span>
+                        <span class="font-bold text-red-600">5</span>
+                    </div>
+                    <div class="bg-blue-100 p-4 rounded-lg flex justify-between items-center">
+                        <span class="font-medium">清洁中</span>
+                        <span class="font-bold text-blue-600">0</span>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-semibold mb-4">座位状态图</h3>
+
+                <!-- 座位布局模拟 -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-8" id="seats-container">
+                    <!-- 座位将通过JavaScript动态生成 -->
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-primary">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fa-solid fa-info-circle text-primary"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-primary">STM32 集成说明</h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <p>此界面通过WebSocket与STM32设备连接，实时接收座位状态更新。</p>
+                                <p>点击"入座"或"出座"按钮会向STM32发送控制命令，更新座位状态。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 点单系统模块 -->
+        <section id="order" class="mb-16 scroll-mt-24">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl md:text-3xl font-bold">点单系统</h2>
+                <div class="flex space-x-3">
+                    <div class="relative">
+                        <input type="text" placeholder="搜索菜品..."
+                            class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg btn-hover" id="filter-btn">
+                        <i class="fa-solid fa-filter mr-2"></i>筛选
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="flex flex-col md:flex-row">
+                    <!-- 档口分类 -->
+                    <div class="md:w-1/4 border-b md:border-b-0 md:border-r border-gray-200 p-4">
+                        <h3 class="text-lg font-semibold mb-4">档口分类</h3>
+                        <div class="space-y-2">
+                            <button class="w-full text-left py-2 px-4 rounded-lg bg-primary/10 text-primary font-medium category-btn"
+                                data-category="all">
+                                <i class="fa-solid fa-burger mr-2"></i>全部
+                            </button>
+                            <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors category-btn"
+                                data-category="fast-food">
+                                <i class="fa-solid fa-burger mr-2"></i>快餐区
+                            </button>
+                            <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors category-btn"
+                                data-category="noodles">
+                                <i class="fa-solid fa-noodles mr-2"></i>面食区
+                            </button>
+                            <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors category-btn"
+                                data-category="rice">
+                                <i class="fa-solid fa-rice mr-2"></i>米饭区
+                            </button>
+                            <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors category-btn"
+                                data-category="dessert">
+                                <i class="fa-solid fa-cake mr-2"></i>甜点区
+                            </button>
+                            <button class="w-full text-left py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors category-btn"
+                                data-category="drinks">
+                                <i class="fa-solid fa-coffee mr-2"></i>饮品区
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 菜品列表 -->
+                    <div class="md:w-3/4 p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">菜品列表</h3>
+                            <div class="text-sm text-gray-500">
+                                <span id="total-dishes">24</span> 个菜品
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="dishes-container">
+                            <!-- 菜品将通过JavaScript动态生成 -->
+                        </div>
+
+                        <!-- 加载更多按钮 -->
+                        <div class="mt-6 text-center">
+                            <button class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors">
+                                <i class="fa-solid fa-refresh mr-2"></i>加载更多
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 统计分析模块 -->
+        <section id="statistics" class="mb-16 scroll-mt-24">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl md:text-3xl font-bold">统计分析</h2>
+                <div class="flex space-x-3">
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                        <option>今日</option>
+                        <option>本周</option>
+                        <option>本月</option>
+                        <option>全年</option>
+                    </select>
+                    <button class="bg-primary text-white px-4 py-2 rounded-lg btn-hover">
+                        <i class="fa-solid fa-download mr-2"></i>导出报表
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4">销售趋势</h3>
+                    <div class="h-80">
+                        <canvas id="sales-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold mb-4">热门菜品</h3>
+                    <div class="h-80">
+                        <canvas id="dishes-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">最受欢迎档口</h3>
+                        <span class="text-sm bg-primary/10 text-primary px-2 py-1 rounded-full">本周</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                            <i class="fa-solid fa-fire text-primary text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium">川味档口</h4>
+                            <div class="flex items-center mt-1">
+                                <div class="h-2 bg-gray-100 rounded-full w-24 mr-2">
+                                    <div class="h-2 bg-primary rounded-full" style="width: 85%"></div>
+                                </div>
+                                <span class="text-sm text-gray-500">85%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">高峰时段</h3>
+                        <span class="text-sm bg-secondary/10 text-secondary px-2 py-1 rounded-full">今日</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 bg-secondary/10 rounded-full flex items-center justify-center mr-4">
+                            <i class="fa-solid fa-clock text-secondary text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium">12:00 - 13:30</h4>
+                            <div class="flex items-center mt-1">
+                                <div class="h-2 bg-gray-100 rounded-full w-24 mr-2">
+                                    <div class="h-2 bg-secondary rounded-full" style="width: 72%"></div>
+                                </div>
+                                <span class="text-sm text-gray-500">72%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">座位利用率</h3>
+                        <span class="text-sm bg-warning/10 text-warning px-2 py-1 rounded-full">本月</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 bg-warning/10 rounded-full flex items-center justify-center mr-4">
+                            <i class="fa-solid fa-percentage text-warning text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium">68.5%</h4>
+                            <div class="flex items-center mt-1">
+                                <div class="h-2 bg-gray-100 rounded-full w-24 mr-2">
+                                    <div class="h-2 bg-warning rounded-full" style="width: 68.5%"></div>
+                                </div>
+                                <span class="text-sm text-gray-500">较上月 +5.2%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 硬件管理模块 -->
+        <section id="hardware" class="mb-16 scroll-mt-24">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl md:text-3xl font-bold">硬件管理</h2>
+                <button class="bg-primary text-white px-4 py-2 rounded-lg btn-hover" id="connect-hardware">
+                    <i class="fa-solid fa-plug mr-2"></i>连接硬件
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-medium">STM32设备</h3>
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs" id="stm32-status">离线</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">设备ID</span>
+                                <span id="device-id">未连接</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">固件版本</span>
+                                <span id="firmware-version">未连接</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">在线时间</span>
+                                <span id="online-time">未连接</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">IP地址</span>
+                                <span id="ip-address">未连接</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <button class="w-full py-2 border border-primary text-primary rounded-lg hover:bg-primary/5 transition-colors">
+                                <i class="fa-solid fa-refresh mr-2"></i>刷新状态
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="font-medium mb-3">通信设置</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">服务器地址</label>
+                                <input type="text" value="ws://10.10.10.3"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">端口号</label>
+                                <input type="text" value="3000"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">连接超时(秒)</label>
+                                <input type="text" value="10"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary">
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <button class="w-full py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                                <i class="fa-solid fa-save mr-2"></i>保存设置
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h3 class="font-medium mb-3">设备日志</h3>
+                        <div class="bg-black text-white p-3 rounded-lg h-48 overflow-y-auto text-xs" id="device-logs">
+                            <!-- 日志内容将通过JavaScript动态添加 -->
+                            <p>等待设备连接...</p>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between">
+                            <button class="py-2 px-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                                <i class="fa-solid fa-trash mr-2"></i>清空日志
+                            </button>
+                            <button class="py-2 px-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
+                                <i class="fa-solid fa-download mr-2"></i>导出日志
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-semibold mb-4">硬件拓扑图</h3>
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 h-64 flex items-center justify-center">
+                    <div class="flex flex-col items-center">
+                        <div class="flex space-x-8 items-center">
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-2">
+                                    <i class="fa-solid fa-server text-blue-600 text-xl"></i>
+                                </div>
+                                <span class="text-sm font-medium">服务器</span>
+                            </div>
+
+                            <div class="w-16 h-1 bg-gray-300"></div>
+
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-2">
+                                    <i class="fa-solid fa-wifi text-green-600 text-xl"></i>
+                                </div>
+                                <span class="text-sm font-medium">WiFi</span>
+                            </div>
+
+                            <div class="w-16 h-1 bg-gray-300"></div>
+
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-2">
+                                    <i class="fa-solid fa-microchip text-purple-600 text-xl"></i>
+                                </div>
+                                <span class="text-sm font-medium">STM32</span>
+                            </div>
+
+                            <div class="w-16 h-1 bg-gray-300"></div>
+
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-2">
+                                    <i class="fa-solid fa-sensors text-red-600 text-xl"></i>
+                                </div>
+                                <span class="text-sm font-medium">传感器</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">智能食堂管理系统</h3>
+                    <p class="text-gray-400">提供高效的食堂座位管理和点单服务，提升食堂运营效率和用户体验。</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">快速链接</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#seats" class="text-gray-400 hover:text-white transition-colors">座位管理</a></li>
+                        <li><a href="#order" class="text-gray-400 hover:text-white transition-colors">点单系统</a></li>
+                        <li><a href="#statistics" class="text-gray-400 hover:text-white transition-colors">统计分析</a></li>
+                        <li><a href="#hardware" class="text-gray-400 hover:text-white transition-colors">硬件管理</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">联系我们</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-phone mr-2 text-gray-400"></i>
+                            <span>400-123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-envelope mr-2 text-gray-400"></i>
+                            <span>support@example.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa-solid fa-location-dot mr-2 text-gray-400"></i>
+                            <span>北京市海淀区中关村大街1号</span>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">关注我们</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors">
+                            <i class="fa-brands fa-weixin text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors">
+                            <i class="fa-brands fa-weibo text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors">
+                            <i class="fa-brands fa-qq text-white"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-500">
+                <p>&copy; 2025 智能食堂管理系统. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 等待DOM加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 移动端菜单切换
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // 初始化座位
+            initializeSeats();
+            
+            // 初始化菜品
+            initializeDishes();
+            
+            // 初始化图表
+            initializeCharts();
+            
+            // 初始化分类按钮事件
+            initializeCategoryButtons();
+            
+            // 初始化自动刷新
+            initializeAutoRefresh();
+            
+            // 初始化连接硬件按钮
+            initializeConnectButton();
+            
+            // 初始化座位刷新按钮
+            initializeSeatRefreshButton();
+        });
+
+        // 初始化座位
+        function initializeSeats() {
+            const seatsContainer = document.getElementById('seats-container');
+            
+            // 清空现有座位
+            seatsContainer.innerHTML = '';
+            
+            // 生成20个座位
+            for (let i = 1; i <= 20; i++) {
+                // 随机状态：0-可用，1-已占用，2-清洁中
+                const status = Math.floor(Math.random() * 3);
+                let statusClass, statusText, buttonText, buttonClass;
+                
+                if (status === 0) {
+                    statusClass = 'bg-green-100 text-green-700';
+                    statusText = '可用';
+                    buttonText = '入座';
+                    buttonClass = 'bg-green-600 hover:bg-green-700';
+                } else if (status === 1) {
+                    statusClass = 'bg-red-100 text-red-700';
+                    statusText = '已占用';
+                    buttonText = '出座';
+                    buttonClass = 'bg-red-600 hover:bg-red-700';
+                } else {
+                    statusClass = 'bg-blue-100 text-blue-700';
+                    statusText = '清洁中';
+                    buttonText = '完成清洁';
+                    buttonClass = 'bg-blue-600 hover:bg-blue-700';
+                }
+                
+                const seat = document.createElement('div');
+                seat.className = `bg-white rounded-lg shadow p-4 seat-indicator ${statusClass}`;
+                seat.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-bold">座位 #${i}</h4>
+                        <span class="px-2 py-1 rounded-full text-xs font-medium">${statusText}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500">状态更新: <span class="font-medium">刚刚</span></span>
+                        <button class="px-3 py-1 rounded text-white text-sm ${buttonClass} transition-colors">${buttonText}</button>
+                    </div>
+                `;
+                
+                seatsContainer.appendChild(seat);
+            }
+        }
+
+        // 初始化菜品
+        function initializeDishes() {
+            const dishesContainer = document.getElementById('dishes-container');
+            
+            // 清空现有菜品
+            dishesContainer.innerHTML = '';
+            
+            // 菜品数据
+            const dishes = [
+                { id: 1, name: '麻辣香锅', price: 28, category: 'fast-food', image: 'https://ts1.tc.mm.bing.net/th/id/R-C.1c72c42ab7935aa6a84b7697a26422b6?rik=dsvuyzSEiv3IXg&riu=http%3a%2f%2fi2.chuimg.com%2fc626b5dc8a2211e6a9a10242ac110002_800w_533h.jpg%3fimageView2%2f2%2fw%2f660%2finterlace%2f1%2fq%2f90&ehk=VBQjL9d0cfb4sgYUXhzVHKMMzWvgRc43mRYffLOE6rc%3d&risl=&pid=ImgRaw&r=0&sres=1&sresct=1' },
+                { id: 2, name: '汉堡套餐', price: 32, category: 'fast-food', image: 'https://pic.nximg.cn/file/20211216/25234857_171529928106_2.jpg' },
+                { id: 3, name: '炸鸡', price: 18, category: 'fast-food', image: 'https://tse4-mm.cn.bing.net/th/id/OIP-C.uXQ0BV-Hg6E_CYie_wc2EAHaE8?cb=iwp2&rs=1&pid=ImgDetMain' },
+                { id: 4, name: '牛肉面', price: 22, category: 'noodles', image: 'https://tse4-mm.cn.bing.net/th/id/OIP-C.7uj_5a_Waza42VV2FnRL5wAAAA?cb=iwp2&rs=1&pid=ImgDetMain' },
+                { id: 5, name: '炸酱面', price: 16, category: 'noodles', image: 'https://pic.nximg.cn/file/20230322/31527039_205139353123_2.jpg' },
+                { id: 6, name: '担担面', price: 18, category: 'noodles', image: 'https://ts1.tc.mm.bing.net/th/id/R-C.8a305f0174ccb0c453ca36b24191ddb3?rik=e9Rd1YqEYMV8CQ&riu=http%3a%2f%2fwww.seelvyou.com%2fuploadfile%2fjingqu%2fchongqing%2fchongqing28.jpg&ehk=fJPrhtqpUPTuuCGB3Txfh1C4DBROO%2btRVNw9aEmVbKw%3d&risl=&pid=ImgRaw&r=0&sres=1&sresct=1' },
+                { id: 7, name: '宫保鸡丁饭', price: 25, category: 'rice', image: 'https://tse4-mm.cn.bing.net/th/id/OIP-C.SUNYo4vu-3njYUNbfjAvbAHaHa?cb=iwp2&rs=1&pid=ImgDetMain' },
+                { id: 8, name: '鱼香肉丝饭', price: 23, category: 'rice', image: 'https://ugc-img.ifengimg.com/img/2022/3/19/8EU6yOpeLjf/eeb95e26-3470-49ee-9a27-1a1f560a1b72_w1728_h1152.jpeg' },
+                { id: 9, name: '糖醋排骨饭', price: 26, category: 'rice', image: 'https://tse3-mm.cn.bing.net/th/id/OIP-C.ryMBz0KsKn1NvwqQz5t1UwHaHa?rs=1&pid=ImgDetMain' },
+                { id: 10, name: '提拉米苏', price: 19, category: 'dessert', image: 'https://img95.699pic.com/photo/50398/8028.jpg_wh860.jpg' },
+                { id: 11, name: '冰淇淋', price: 12, category: 'dessert', image: 'https://ts1.tc.mm.bing.net/th/id/R-C.1aca1ea9ee49fec6d4ab8a59c1a61767?rik=W6UptYUywc%2fXAw&riu=http%3a%2f%2fi2.chuimg.com%2f4c07b20a87a811e6a9a10242ac110002_1280w_855h.jpg%3fimageView2%2f2%2fw%2f660%2finterlace%2f1%2fq%2f90&ehk=8WkbHV8UjXJb1ZkchaIwLB0wJo9R0COrl7gX%2bWXnFkE%3d&risl=&pid=ImgRaw&r=0' },
+                { id: 12, name: '水果沙拉', price: 15, category: 'dessert', image: 'https://ts1.tc.mm.bing.net/th/id/R-C.407024390c856f23f79891915a061907?rik=pQ9vZIFssG9AMg&riu=http%3a%2f%2fseopic.699pic.com%2fphoto%2f50077%2f6336.jpg_wh1200.jpg&ehk=VGswsj5NgeKnSXiro2u5aT9CP2ExdboY8pROw3BjxmU%3d&risl=&pid=ImgRaw&r=0' },
+                { id: 13, name: '奶茶', price: 12, category: 'drinks', image: 'https://ts1.tc.mm.bing.net/th/id/R-C.2bd6a6f49d57ce0c091ac1948807750c?rik=5OGowRo8XyGb8Q&riu=http%3a%2f%2fn.sinaimg.cn%2fsinakd10114%2f484%2fw640h644%2f20200722%2f716f-iwtqvyk1661194.jpg&ehk=Zh0A0xQMs4BHzn8lLKQtcDgKThRZcmK%2bJX9%2fHu2ibVg%3d&risl=&pid=ImgRaw&r=0' },
+                { id: 14, name: '咖啡', price: 18, category: 'drinks', image: 'https://ts1.tc.mm.bing.net/th/id/R-C.3bf00659da373e8375ed91746716c22d?rik=Ke5g51dYdJAPyA&riu=http%3a%2f%2fwww.sainacoffee.com%2fuploadfile%2f2018%2f0122%2f20180122051242130.jpg&ehk=qnm5xwdT1QEF9OC79EhcyaV2yvof8bkS61rCCPV6dNo%3d&risl=&pid=ImgRaw&r=0' },
+                { id: 15, name: '果汁', price: 15, category: 'drinks', image: 'https://tse4-mm.cn.bing.net/th/id/OIP-C.1SSycwdf7CKlbbEQ2TYtkwHaE7?cb=iwp2&rs=1&pid=ImgDetMain' },
+                { id: 16, name: '可乐', price: 5, category: 'drinks', image: 'https://imgservice.suning.cn/uimg1/b2c/image/UDqZUhRD5mNPxdvXNn1BJw.jpg' },
+                { id: 17, name: '雪碧', price: 5, category: 'drinks', image: 'https://m.360buyimg.com/mobilecms/s750x750_jfs/t1/182635/2/20520/157792/61232af7Ed28b03e1/e6dd88042936e312.jpg!q80.dpg' },
+                { id: 18, name: '矿泉水', price: 3, category: 'drinks', image: 'https://cbu01.alicdn.com/img/ibank/2020/429/007/13300700924_291492083.jpg' },
+                { id: 19, name: '饺子', price: 20, category: 'noodles', image: 'https://pic.nximg.cn/file/20230607/34181045_081817407107_2.jpg' },
+                { id: 20, name: '馄饨', price: 15, category: 'noodles', image: 'https://pic.nximg.cn/file/20230403/33857552_112117149101_2.jpg' },
+                { id: 21, name: '炒饭', price: 18, category: 'rice', image: 'https://ts1.tc.mm.bing.net/th/id/R-C.8293fe291933857e16342bcdcc75807b?rik=MdYw0OZVQthTjg&riu=http%3a%2f%2fn.sinaimg.cn%2fsinakd20201213ac%2f133%2fw2000h1333%2f20201213%2f692c-kffctca7094617.jpg&ehk=ALKWvf4eukghkuKm4e3bNhPis34WldpmcBVRvQoUOcg%3d&risl=&pid=ImgRaw&r=0' },
+                { id: 22, name: '披萨', price: 48, category: 'fast-food', image: 'https://img95.699pic.com/photo/50161/4335.jpg_wh860.jpg' },
+                { id: 23, name: '蛋糕', price: 22, category: 'dessert', image: 'https://ts1.tc.mm.bing.net/th/id/R-C.97f8e5d657e44ea96e150091bf69085f?rik=q5MUZNIgtigRUg&riu=http%3a%2f%2fwdmcake.cn%2fimages%2fupload%2fImage%2f2018071917.jpg&ehk=xlEtPHcDrFOBuB5l%2fqMBTplRgetUmh1sjJxkJ%2bgbLmM%3d&risl=&pid=ImgRaw&r=0' },
+                { id: 24, name: '酸奶', price: 8, category: 'dessert', image: 'https://pic.52112.com/180717/JPG-180717_393/oLtEuBXIya_small.jpg' }
+            ];
+            
+            // 渲染所有菜品
+            renderDishes(dishes);
+        }
+
+        // 渲染菜品
+        function renderDishes(dishes) {
+            const dishesContainer = document.getElementById('dishes-container');
+            
+            // 清空现有菜品
+            dishesContainer.innerHTML = '';
+            
+            // 更新总菜品数量
+            document.getElementById('total-dishes').textContent = dishes.length;
+            
+            // 渲染每个菜品
+            dishes.forEach(dish => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-md overflow-hidden card-hover';
+                card.innerHTML = `
+                    <div class="relative">
+                        <img src="${dish.image}" alt="${dish.name}" class="w-full h-48 object-cover">
+                        <span class="absolute top-2 right-2 bg-primary text-white text-xs font-bold px-2 py-1 rounded">
+                            ${getCategoryName(dish.category)}
+                        </span>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-lg">${dish.name}</h3>
+                            <span class="text-primary font-bold">¥${dish.price}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fa-solid fa-star text-yellow-400"></i>
+                                <span class="ml-1 text-sm">4.8</span>
+                                <span class="ml-1 text-gray-400 text-sm">(128)</span>
+                            </div>
+                            <button class="bg-primary text-white px-3 py-1 rounded-full text-sm hover:bg-primary/90 transition-colors">
+                                <i class="fa-solid fa-plus mr-1"></i>加入
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                dishesContainer.appendChild(card);
+            });
+        }
+
+        // 获取分类名称
+        function getCategoryName(category) {
+            const categories = {
+                'fast-food': '快餐区',
+                'noodles': '面食区',
+                'rice': '米饭区',
+                'dessert': '甜点区',
+                'drinks': '饮品区'
+            };
+            
+            return categories[category] || category;
+        }
+
+        // 初始化分类按钮事件
+        function initializeCategoryButtons() {
+            const categoryButtons = document.querySelectorAll('.category-btn');
+            
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有按钮的活动状态
+                    categoryButtons.forEach(btn => {
+                        btn.classList.remove('bg-primary/10', 'text-primary');
+                        btn.classList.add('hover:bg-gray-100');
+                    });
+                    
+                    // 添加当前按钮的活动状态
+                    this.classList.add('bg-primary/10', 'text-primary');
+                    this.classList.remove('hover:bg-gray-100');
+                    
+                    // 获取分类
+                    const category = this.getAttribute('data-category');
+                    
+                    // 筛选菜品
+                    filterDishes(category);
+                });
+            });
+        }
+
+        // 筛选菜品
+        function filterDishes(category) {
+            const dishesContainer = document.getElementById('dishes-container');
+            
+            // 显示加载状态
+            dishesContainer.innerHTML = `
+                <div class="col-span-full flex justify-center items-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                </div>
+            `;
+            
+            // 模拟API请求延迟
+            setTimeout(() => {
+                // 重新初始化菜品
+                initializeDishes();
+                
+                // 如果不是全部类别，则筛选
+                if (category !== 'all') {
+                    const dishes = Array.from(dishesContainer.children);
+                    
+                    dishes.forEach(dish => {
+                        const categoryElement = dish.querySelector('.absolute');
+                        const dishCategory = getCategoryKey(categoryElement.textContent.trim());
+                        
+                        if (dishCategory !== category) {
+                            dish.style.display = 'none';
+                        } else {
+                            dish.style.display = 'block';
+                        }
+                    });
+                }
+            }, 500);
+        }
+
+        // 获取分类键
+        function getCategoryKey(categoryName) {
+            const categories = {
+                '快餐区': 'fast-food',
+                '面食区': 'noodles',
+                '米饭区': 'rice',
+                '甜点区': 'dessert',
+                '饮品区': 'drinks'
+            };
+            
+            return categories[categoryName] || null;
+        }
+
+        // 初始化图表
+        function initializeCharts() {
+            // 销售趋势图表
+            const salesChartCtx = document.getElementById('sales-chart').getContext('2d');
+            new Chart(salesChartCtx, {
+                type: 'line',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    datasets: [{
+                        label: '销售额 (万元)',
+                        data: [12, 19, 15, 22, 25, 30],
+                        borderColor: '#165DFF',
+                        backgroundColor: 'rgba(22, 93, 255, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // 热门菜品图表
+            const dishesChartCtx = document.getElementById('dishes-chart').getContext('2d');
+            new Chart(dishesChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['麻辣香锅', '牛肉面', '宫保鸡丁饭', '汉堡套餐', '提拉米苏'],
+                    datasets: [{
+                        label: '销量 (份)',
+                        data: [450, 380, 320, 280, 250],
+                        backgroundColor: [
+                            'rgba(22, 93, 255, 0.7)',
+                            'rgba(0, 180, 42, 0.7)',
+                            'rgba(245, 63, 63, 0.7)',
+                            'rgba(255, 125, 0, 0.7)',
+                            'rgba(134, 144, 156, 0.7)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化自动刷新
+        function initializeAutoRefresh() {
+            const autoRefreshButton = document.getElementById('auto-refresh');
+            let isAutoRefreshing = false;
+            let refreshInterval;
+            
+            autoRefreshButton.addEventListener('click', function() {
+                if (isAutoRefreshing) {
+                    // 停止自动刷新
+                    clearInterval(refreshInterval);
+                    this.innerHTML = '<i class="fa-solid fa-sync mr-2"></i>自动刷新';
+                    this.classList.remove('bg-red-600');
+                    this.classList.add('bg-secondary');
+                } else {
+                    // 开始自动刷新
+                    refreshInterval = setInterval(() => {
+                        initializeSeats();
+                        addLog('自动刷新座位状态');
+                    }, 5000);
+                    
+                    this.innerHTML = '<i class="fa-solid fa-pause mr-2"></i>停止刷新';
+                    this.classList.remove('bg-secondary');
+                    this.classList.add('bg-red-600');
+                }
+                
+                isAutoRefreshing = !isAutoRefreshing;
+            });
+        }
+
+        // 初始化连接硬件按钮
+        function initializeConnectButton() {
+            const connectButton = document.getElementById('connect-hardware');
+            const connectionStatus = document.getElementById('connection-status');
+            const stm32Status = document.getElementById('stm32-status');
+            const deviceId = document.getElementById('device-id');
+            const firmwareVersion = document.getElementById('firmware-version');
+            const onlineTime = document.getElementById('online-time');
+            const ipAddress = document.getElementById('ip-address');
+            const deviceLogs = document.getElementById('device-logs');
+            
+            let isConnected = false;
+            
+            connectButton.addEventListener('click', function() {
+                if (isConnected) {
+                    // 断开连接
+                    isConnected = false;
+                    this.innerHTML = '<i class="fa-solid fa-plug mr-2"></i>连接硬件';
+                    this.classList.remove('bg-red-600');
+                    this.classList.add('bg-primary');
+                    
+                    connectionStatus.classList.add('hidden');
+                    stm32Status.textContent = '离线';
+                    stm32Status.className = 'px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs';
+                    
+                    deviceId.textContent = '未连接';
+                    firmwareVersion.textContent = '未连接';
+                    onlineTime.textContent = '未连接';
+                    ipAddress.textContent = '未连接';
+                    
+                    addLog('已断开与STM32设备的连接');
+                } else {
+                    // 连接硬件
+                    isConnected = true;
+                    this.innerHTML = '<i class="fa-solid fa-plug-circle-minus mr-2"></i>断开连接';
+                    this.classList.remove('bg-primary');
+                    this.classList.add('bg-red-600');
+                    
+                    connectionStatus.classList.add('hidden');
+                    stm32Status.textContent = '在线';
+                    stm32Status.className = 'px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs';
+                    
+                    deviceId.textContent = 'STM32F407ZG';
+                    firmwareVersion.textContent = 'v2.1.0';
+                    onlineTime.textContent = '00:05:23';
+                    ipAddress.textContent = '192.168.1.100';
+                    
+                    addLog('已成功连接到STM32设备');
+                    
+                    // 模拟接收数据
+                    setTimeout(() => {
+                        addLog('收到传感器数据更新');
+                        initializeSeats();
+                    }, 1000);
+                }
+            });
+        }
+
+        // 添加日志
+        function addLog(message) {
+            const deviceLogs = document.getElementById('device-logs');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const logEntry = document.createElement('p');
+            logEntry.className = 'mb-1';
+            logEntry.innerHTML = `<span class="text-gray-400">[${timestamp}]</span> ${message}`;
+            
+            deviceLogs.appendChild(logEntry);
+            deviceLogs.scrollTop = deviceLogs.scrollHeight;
+        }
+
+        // 初始化座位刷新按钮
+        function initializeSeatRefreshButton() {
+            const refreshButton = document.getElementById('refresh-seats');
+            
+            refreshButton.addEventListener('click', function() {
+                // 显示加载动画
+                this.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>刷新中...';
+                
+                // 模拟加载延迟
+                setTimeout(() => {
+                    initializeSeats();
+                    this.innerHTML = '<i class="fa-solid fa-refresh mr-2"></i>刷新状态';
+                    addLog('手动刷新座位状态');
+                }, 800);
+            });
+        }
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80, // 考虑到固定导航栏的高度
+                        behavior: 'smooth'
+                    });
+                    
+                    // 如果是移动端，点击后关闭菜单
+                    if (window.innerWidth < 768) {
+                        const mobileMenu = document.getElementById('mobile-menu');
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>    
