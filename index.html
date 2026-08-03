@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>白术资源导航站</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            green: '#4e7c6d',
+                            lightGreen: '#70aa99',
+                            ochre: '#a6785c',
+                            lightBg: '#eeece8',
+                            darkBg: '#181b1a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .brand-card {
+                background: linear-gradient(135deg, rgba(255,255,255,0.68), rgba(255,255,255,0.54));
+                border: 1px solid rgba(78, 124, 109, 0.18);
+                backdrop-filter: blur(18px);
+                -webkit-backdrop-filter: blur(18px);
+            }
+            .dark .brand-card {
+                background: linear-gradient(135deg, rgba(44, 50, 49, 0.78), rgba(34, 38, 37, 0.68));
+                border: 1px solid rgba(112, 170, 153, 0.16);
+            }
+            .card-hover {
+                transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                border-color: rgba(78, 124, 109, 0.38);
+                box-shadow: 0 12px 26px rgba(78, 124, 109, 0.16), 0 0 12px rgba(78,124,109,0.08);
+            }
+            .dark .card-hover:hover {
+                box-shadow: 0 12px 26px rgba(0, 0, 0, 0.32), 0 0 14px rgba(112,170,153,0.08);
+            }
+            .text-brand-gradient{
+                background: linear-gradient(90deg,#4e7c6d,#659485);
+                -webkit-background-clip: text;
+                color: transparent;
+            }
+            .dark .text-brand-gradient{
+                background: linear-gradient(90deg,#70aa99,#8cb8a9);
+                -webkit-background-clip: text;
+                color: transparent;
+            }
+            .theme-btn {
+                width: 42px;
+                height: 42px;
+                border-radius: 999px;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-size:16px;
+                cursor:pointer;
+                transition: all 0.3s ease;
+                border:1px solid rgba(78,124,109,0.24);
+                color:#4e7c6d;
+                background: linear-gradient(135deg,rgba(255,255,255,0.5),rgba(255,255,255,0.3));
+                box-shadow: 0 2px 8px rgba(78,124,109,0.06);
+            }
+            .theme-btn:hover{
+                background:linear-gradient(135deg,rgba(78,124,109,0.16),rgba(78,124,109,0.06));
+                box-shadow: 0 3px 12px rgba(78,124,109,0.12);
+            }
+            .dark .theme-btn{
+                border:1px solid rgba(112,170,153,0.20);
+                color:#70aa99;
+                background:linear-gradient(135deg,rgba(42,48,47,0.6),rgba(32,36,35,0.45));
+                box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+            }
+            .dark .theme-btn:hover{
+                background:linear-gradient(135deg,rgba(112,170,153,0.14),rgba(112,170,153,0.05));
+                box-shadow: 0 3px 14px rgba(0,0,0,0.35);
+            }
+            .brand-line{
+                flex-grow:1;
+                height:2px;
+                background:linear-gradient(90deg,#4e7c6d,#a6785c);
+                border-radius:1px;
+                box-shadow: 0 0 6px rgba(78,124,109,0.15);
+            }
+            .dark .brand-line{
+                background:linear-gradient(90deg,#70aa99,#a6785c);
+                box-shadow: 0 0 6px rgba(112,170,153,0.12);
+            }
+            .notice-box{
+                background: rgba(78,124,109,0.14);
+                border:1px solid rgba(78,124,109,0.24);
+                border-radius:12px;
+            }
+            .dark .notice-box{
+                background: rgba(112,170,153,0.12);
+                border:1px solid rgba(112,170,153,0.22);
+            }
+            .sentence-fade{
+                transition: opacity 0.8s ease;
+            }
+            /* 主题图标切换核心样式，解决双图标同时显示 */
+            .theme-icon-sun,
+            .theme-icon-moon {
+                position: absolute;
+                transition: all 0.3s ease;
+            }
+            .theme-icon-sun {
+                opacity: 1;
+                visibility: visible;
+            }
+            .theme-icon-moon {
+                opacity: 0;
+                visibility: hidden;
+            }
+            .dark .theme-icon-sun {
+                opacity: 0;
+                visibility: hidden;
+            }
+            .dark .theme-icon-moon {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.65s ease;
+        }
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="light dark:text-gray-100 text-gray-800">
+    <canvas id="bgCanvas"></canvas>
+
+    <div class="container mx-auto px-4 py-8 md:py-12 max-w-5xl">
+        <header class="flex justify-between items-center mb-5">
+            <div>
+                <h1 class="text-[clamp(1.6rem,3.5vw,2.3rem)] font-semibold tracking-wide text-brand-gradient">白术资源导航站</h1>
+                <p class="mt-1 text-sm opacity-70">Personal Gateway · 个人站点聚合入口</p>
+            </div>
+            <div id="themeToggle" class="theme-btn relative">
+                <i class="fa fa-sun-o theme-icon-sun"></i>
+                <i class="fa fa-moon-o theme-icon-moon"></i>
+            </div>
+        </header>
+
+        <!-- 分割线+诗意文案（整体上移，间距收紧） -->
+        <div class="flex items-center gap-4 mb-5">
+            <div class="brand-line"></div>
+            <div class="h-10 flex items-center justify-center overflow-hidden shrink-0 min-w-[240px]">
+                <p id="rollSentence" class="sentence-fade opacity-80 text-sm md:text-base tracking-wide whitespace-nowrap"></p>
+            </div>
+            <div class="brand-line"></div>
+        </div>
+
+        <div class="notice-box p-4 mb-8">
+            <p class="text-sm leading-relaxed">
+                <i class="fa fa-exclamation-circle mr-2"></i>
+                ⚠️ 所有站点服务器部署于海外，访问链接加载请耐心等待；<strong>【主网站】为稳定正式版本</strong>，其余线路均为尝鲜测试线路，存在不稳定、断线、加载缓慢风险。
+            </p>
+        </div>
+
+        <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <a href="https://baizhu.pythonanywhere.com/" target="_blank" class="brand-card rounded-xl p-4 card-hover block">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-brand-green/11 dark:bg-brand-lightGreen/15 flex items-center justify-center text-brand-green dark:text-brand-lightGreen text-lg">
+                        <i class="fa fa-home"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-base">主网站</h3>
+                        <p class="text-xs opacity-75 mt-0.5">baizhu.pythonanywhere.com</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="http://baizhutop.dpdns.org/" target="_blank" class="brand-card rounded-xl p-4 card-hover block">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-brand-green/11 dark:bg-brand-lightGreen/15 flex items-center justify-center text-brand-green dark:text-brand-lightGreen text-lg">
+                        <i class="fa fa-server"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-base">备用线路1</h3>
+                        <p class="text-xs opacity-75 mt-0.5">baizhutop.dpdns.org</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="http://baizhu.back1.idcfengye.com/" target="_blank" class="brand-card rounded-xl p-4 card-hover block">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-brand-green/11 dark:bg-brand-lightGreen/15 flex items-center justify-center text-brand-green dark:text-brand-lightGreen text-lg">
+                        <i class="fa fa-server"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-base">备用线路2</h3>
+                        <p class="text-xs opacity-75 mt-0.5">baizhu.back1.idcfengye.com</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="http://baizhu.hppro1.hpnu.cn/" target="_blank" class="brand-card rounded-xl p-4 card-hover block">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-brand-green/11 dark:bg-brand-lightGreen/15 flex items-center justify-center text-brand-green dark:text-brand-lightGreen text-lg">
+                        <i class="fa fa-server"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-base">备用线路3</h3>
+                        <p class="text-xs opacity-75 mt-0.5">baizhu.hppro1.hpnu.cn</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://baizhuziyuan.dpdns.org" target="_blank" class="brand-card rounded-xl p-4 card-hover block">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-brand-ochre/15 dark:bg-brand-ochre/20 flex items-center justify-center text-brand-ochre text-lg">
+                        <i class="fa fa-random"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-base">代理站点 <span class="text-xs opacity-60">(开发中)</span></h3>
+                        <p class="text-xs opacity-75 mt-0.5">baizhuziyuan.dpdns.org</p>
+                    </div>
+                </div>
+            </a>
+        </main>
+
+        <footer class="mt-12 text-center text-sm opacity-55">
+            <p>白术资源导航站 · Personal Portal</p>
+        </footer>
+    </div>
+
+    <script>
+        const html = document.documentElement;
+        const toggleBtn = document.getElementById('themeToggle');
+        const sentenceDom = document.getElementById("rollSentence");
+
+        const sentenceList = [
+            "山有白术，静候归途。",
+            "浮云流转，万事缓缓。",
+            "且随清风，赴前路山海。",
+            "人间朝暮，叶落归期。",
+            "心有安处，便是归途。",
+            "云雾漫卷，静待相逢。"
+        ];
+
+        let sentenceIndex = 0;
+
+        function rollSentence(){
+            sentenceDom.style.opacity = "0";
+            setTimeout(()=>{
+                sentenceIndex = (sentenceIndex + 1) % sentenceList.length;
+                sentenceDom.innerText = sentenceList[sentenceIndex];
+                sentenceDom.style.opacity = "1";
+            },800);
+        }
+
+        sentenceDom.innerText = sentenceList[0];
+        setInterval(rollSentence,6000);
+
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        }
+
+        toggleBtn.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let w, h, time = 0;
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+
+        class CloudMist {
+            constructor() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.radius = Math.random() * 420 + 260;
+                this.speedX = (Math.random() - 0.5) * 0.75;
+                this.speedY = (Math.random() - 0.5) * 0.38;
+                this.phase = Math.random() * Math.PI * 2;
+            }
+
+            update(t) {
+                this.x += this.speedX + Math.sin(t * 0.0004 + this.phase) * 1.6;
+                this.y += this.speedY + Math.cos(t * 0.0004 + this.phase) * 0.8;
+
+                if (this.x < -500) this.x = w + 500;
+                if (this.x > w + 500) this.x = -500;
+                if (this.y < -500) this.y = h + 500;
+                if (this.y > h + 500) this.y = -500;
+            }
+
+            draw(t, dark) {
+                const pulse = Math.sin(t * 0.0006 + this.phase) * 80;
+                const r = this.radius + pulse;
+                const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, r);
+
+                if (dark) {
+                    grad.addColorStop(0, 'rgba(112, 170, 153, 0.18)');
+                    grad.addColorStop(0.35, 'rgba(112, 170, 153, 0.08)');
+                    grad.addColorStop(1, 'rgba(112, 170, 153, 0)');
+                } else {
+                    grad.addColorStop(0, 'rgba(166, 120, 92, 0.17)');
+                    grad.addColorStop(0.35, 'rgba(166, 120, 92, 0.07)');
+                    grad.addColorStop(1, 'rgba(166, 120, 92, 0)');
+                }
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+            }
+        }
+
+        class InkRing {
+            constructor() {
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.maxRadius = Math.random() * 340 + 200;
+                this.radius = 0;
+                this.growing = true;
+                this.speed = Math.random() * 1.1 + 0.75;
+                this.alpha = Math.random() * 0.055 + 0.025;
+            }
+
+            update() {
+                if (this.growing) {
+                    this.radius += this.speed;
+                    if (this.radius >= this.maxRadius) this.growing = false;
+                } else {
+                    this.radius -= this.speed * 0.65;
+                    if (this.radius <= 0) {
+                        this.reset();
+                    }
+                }
+            }
+
+            reset(){
+                this.x = Math.random() * w;
+                this.y = Math.random() * h;
+                this.radius = 0;
+                this.growing = true;
+                this.maxRadius = Math.random() * 340 + 200;
+            }
+
+            draw(dark) {
+                if (this.radius <= 0) return;
+
+                const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+
+                if (dark) {
+                    grad.addColorStop(0, `rgba(112, 170, 153, ${this.alpha})`);
+                    grad.addColorStop(1, 'rgba(112, 170, 153, 0)');
+                } else {
+                    grad.addColorStop(0, `rgba(166, 120, 92, ${this.alpha})`);
+                    grad.addColorStop(1, 'rgba(166, 120, 92, 0)');
+                }
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+            }
+        }
+
+        const cloudList = [];
+        const inkRingList = [];
+
+        for (let i = 0; i < 10; i++) cloudList.push(new CloudMist());
+        for (let i = 0; i < 7; i++) inkRingList.push(new InkRing());
+
+        function animate() {
+            time += 1;
+            const dark = html.classList.contains('dark');
+
+            ctx.fillStyle = dark ? '#181b1a' : '#eeece8';
+            ctx.fillRect(0, 0, w, h);
+
+            inkRingList.forEach(ring => {
+                ring.update();
+                ring.draw(dark);
+            });
+
+            cloudList.forEach(cloud => {
+                cloud.update(time);
+                cloud.draw(time, dark);
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
