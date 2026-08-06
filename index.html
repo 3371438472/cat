@@ -18,6 +18,7 @@
                             ochre: '#a6785c',
                             lightBg: '#eeece8',
                             darkBg: '#181b1a'
+                            lila:'#ADA7CB;'
                         }
                     },
                     fontFamily: {
@@ -134,6 +135,22 @@
                 opacity: 1;
                 visibility: visible;
             }
+            .tag-green{
+                font-size:11px;
+                padding:2px 6px;
+                border-radius:4px;
+                background-color:#28c76f;
+                color:#fff;
+                margin-left:6px;
+            }
+            .tag-orange{
+                font-size:11px;
+                padding:2px 6px;
+                border-radius:4px;
+                background-color:#f7931e;
+                color:#fff;
+                margin-left:6px;
+            }
         }
         * {
             margin: 0;
@@ -170,7 +187,7 @@
             </div>
         </header>
 
-        <!-- 分割线+诗意文案（整体上移，间距收紧） -->
+        <!-- 分割线+诗意文案 -->
         <div class="flex items-center gap-4 mb-5">
             <div class="brand-line"></div>
             <div class="h-10 flex items-center justify-center overflow-hidden shrink-0 min-w-[240px]">
@@ -179,10 +196,11 @@
             <div class="brand-line"></div>
         </div>
 
+        <!--公告区：移除重复感叹号，仅保留FontAwesome图标-->
         <div class="notice-box p-4 mb-8">
             <p class="text-sm leading-relaxed">
                 <i class="fa fa-exclamation-circle mr-2"></i>
-                ⚠️ 所有站点服务器部署于海外，访问链接加载请耐心等待；<strong>【主网站】为稳定正式版本</strong>，其余线路均为尝鲜测试线路，存在不稳定、断线、加载缓慢风险。
+                所有站点服务器部署于海外，访问链接加载请耐心等待；<strong>【主网站】为稳定正式版本</strong>，其余线路均为尝鲜测试线路，存在不稳定、断线、加载缓慢风险。
             </p>
         </div>
 
@@ -193,7 +211,7 @@
                         <i class="fa fa-home"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-base">主网站</h3>
+                        <h3 class="font-semibold text-base">主网站 <span class="tag-green">推荐</span></h3>
                         <p class="text-xs opacity-75 mt-0.5">baizhu.pythonanywhere.com</p>
                     </div>
                 </div>
@@ -241,12 +259,34 @@
                         <i class="fa fa-random"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-base">代理站点 <span class="text-xs opacity-60">(开发中)</span></h3>
+                        <h3 class="font-semibold text-base">代理站点 <span class="tag-orange">开发中...</span></h3>
                         <p class="text-xs opacity-75 mt-0.5">baizhuziyuan.dpdns.org</p>
                     </div>
                 </div>
             </a>
         </main>
+
+        <!--分割线 修正特殊连字符bug opacity‑70 → opacity-70-->
+        <div class="my-7 flex items-center gap-4">
+            <div class="brand-line"></div>
+            <span class="shrink-0 text-sm opacity-70">友情推荐站点</span>
+            <div class="brand-line"></div>
+        </div>
+
+        <!--友情卡片：仅展示名称+备注，页面不显示网址，href保留跳转地址-->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <a href="http://dh.wsmywlkj.top" target="_blank" class="brand-card rounded-xl p-4 card-hover block">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-brand-green/11 dark:bg-brand-lightGreen/15 flex items-center justify-center text-brand-green dark:text-brand-lightGreen text-lg">
+                        <i class="fa fa-link"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-base">栖光导航<span class="tag-lila">推荐</span></h3>
+                        <p class="text-xs opacity-75 mt-0.5">导航站</p>
+                    </div>
+                </div>
+            </a>
+        </div>
 
         <footer class="mt-12 text-center text-sm opacity-55">
             <p>白术资源导航站 · Personal Portal</p>
