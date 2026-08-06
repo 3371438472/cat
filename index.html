@@ -17,8 +17,8 @@
                             lightGreen: '#70aa99',
                             ochre: '#a6785c',
                             lightBg: '#eeece8',
-                            darkBg: '#181b1a'
-                            lila:'#ADA7CB;'
+                            darkBg: '#181b1a',
+                            lila: '#ADA7CB'
                         }
                     },
                     fontFamily: {
@@ -35,10 +35,12 @@
                 border: 1px solid rgba(78, 124, 109, 0.18);
                 backdrop-filter: blur(18px);
                 -webkit-backdrop-filter: blur(18px);
+                color: inherit;
             }
             .dark .brand-card {
                 background: linear-gradient(135deg, rgba(44, 50, 49, 0.78), rgba(34, 38, 37, 0.68));
                 border: 1px solid rgba(112, 170, 153, 0.16);
+                color: inherit;
             }
             .card-hover {
                 transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
@@ -105,6 +107,7 @@
                 background: rgba(78,124,109,0.14);
                 border:1px solid rgba(78,124,109,0.24);
                 border-radius:12px;
+                color: inherit;
             }
             .dark .notice-box{
                 background: rgba(112,170,153,0.12);
@@ -151,6 +154,18 @@
                 color:#fff;
                 margin-left:6px;
             }
+            /* Add lila tag style and dark variant */
+            .tag-lila{
+                font-size:11px;
+                padding:2px 6px;
+                border-radius:4px;
+                background-color:#ADA7CB; /* matches tailwind brand.lila */
+                color:#fff;
+                margin-left:6px;
+            }
+            .dark .tag-lila{
+                background-color:#9B90B8;
+            }
         }
         * {
             margin: 0;
@@ -161,7 +176,18 @@
             min-height: 100vh;
             overflow-x: hidden;
             transition: background 0.65s ease;
+            color: #1f2937; /* default text color (dark gray) */
         }
+        /* Improve dark-mode text contrast: ensure readable foreground color in dark theme */
+        .dark, .dark body {
+            color: #E6F3EC !important; /* light mint for good contrast */
+        }
+
+        /* Make muted/opacity text a bit stronger in dark mode for readability */
+        .dark .opacity-75 { opacity: 0.92 !important; }
+        .dark .opacity-70 { opacity: 0.9 !important; }
+        .dark .opacity-55 { opacity: 0.88 !important; }
+
         #bgCanvas {
             position: fixed;
             top: 0;
@@ -200,7 +226,7 @@
         <div class="notice-box p-4 mb-8">
             <p class="text-sm leading-relaxed">
                 <i class="fa fa-exclamation-circle mr-2"></i>
-                所有站点服务器部署于海外，访问链接加载请耐心等待；<strong>【主网站】为稳定正式版本</strong>，其余线路均为尝鲜测试线路，存在不稳定、断线、加载缓慢风险。
+                所有站点服务器部署于海外，访问链接加载请耐心等待；<strong>【主网站】为稳定正式版本</strong>，其余线路均为尝鲜测试线路，存在不稳…
             </p>
         </div>
 
@@ -224,7 +250,7 @@
                     </div>
                     <div>
                         <h3 class="font-semibold text-base">备用线路1</h3>
-                        <p class="text-xs opacity-75 mt-0.5">baizhutop.dpdns.org</p>
+                        <p class="text-xs opacity-75 mt-0.5">baizhu.top.dpdns.org</p>
                     </div>
                 </div>
             </a>
