@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 添加防缓存头部，解决GitHub Pages样式缓存不更新 -->
+    <meta http-equiv="cache-control" content="no-cache,no-store,must-revalidate">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="expires" content="0">
     <title>白术资源导航站</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -35,12 +39,10 @@
                 border: 1px solid rgba(78, 124, 109, 0.18);
                 backdrop-filter: blur(18px);
                 -webkit-backdrop-filter: blur(18px);
-                color: inherit;
             }
             .dark .brand-card {
                 background: linear-gradient(135deg, rgba(44, 50, 49, 0.78), rgba(34, 38, 37, 0.68));
                 border: 1px solid rgba(112, 170, 153, 0.16);
-                color: inherit;
             }
             .card-hover {
                 transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
@@ -107,7 +109,6 @@
                 background: rgba(78,124,109,0.14);
                 border:1px solid rgba(78,124,109,0.24);
                 border-radius:12px;
-                color: inherit;
             }
             .dark .notice-box{
                 background: rgba(112,170,153,0.12);
@@ -154,18 +155,6 @@
                 color:#fff;
                 margin-left:6px;
             }
-            /* Add lila tag style and dark variant */
-            .tag-lila{
-                font-size:11px;
-                padding:2px 6px;
-                border-radius:4px;
-                background-color:#ADA7CB; /* matches tailwind brand.lila */
-                color:#fff;
-                margin-left:6px;
-            }
-            .dark .tag-lila{
-                background-color:#9B90B8;
-            }
         }
         * {
             margin: 0;
@@ -176,18 +165,7 @@
             min-height: 100vh;
             overflow-x: hidden;
             transition: background 0.65s ease;
-            color: #1f2937; /* default text color (dark gray) */
         }
-        /* Improve dark-mode text contrast: ensure readable foreground color in dark theme */
-        .dark, .dark body {
-            color: #E6F3EC !important; /* light mint for good contrast */
-        }
-
-        /* Make muted/opacity text a bit stronger in dark mode for readability */
-        .dark .opacity-75 { opacity: 0.92 !important; }
-        .dark .opacity-70 { opacity: 0.9 !important; }
-        .dark .opacity-55 { opacity: 0.88 !important; }
-
         #bgCanvas {
             position: fixed;
             top: 0;
@@ -226,7 +204,7 @@
         <div class="notice-box p-4 mb-8">
             <p class="text-sm leading-relaxed">
                 <i class="fa fa-exclamation-circle mr-2"></i>
-                所有站点服务器部署于海外，访问链接加载请耐心等待；<strong>【主网站】为稳定正式版本</strong>，其余线路均为尝鲜测试线路，存在不稳…
+                所有站点服务器部署于海外，访问链接加载请耐心等待；<strong>【主网站】为稳定正式版本</strong>，其余线路均为尝鲜测试线路，存在不稳定、断线、加载缓慢风险。
             </p>
         </div>
 
@@ -249,7 +227,7 @@
                         <i class="fa fa-server"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-base">备用线路1</h3>
+                        <h3 class="font-semibold text-base">cloudflare线路</h3>
                         <p class="text-xs opacity-75 mt-0.5">baizhutop.dpdns.org</p>
                     </div>
                 </div>
@@ -261,7 +239,7 @@
                         <i class="fa fa-server"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-base">备用线路2</h3>
+                        <h3 class="font-semibold text-base">本地服务器–不稳定</h3>
                         <p class="text-xs opacity-75 mt-0.5">baizhu.back1.idcfengye.com</p>
                     </div>
                 </div>
@@ -273,7 +251,7 @@
                         <i class="fa fa-server"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-base">备用线路3</h3>
+                        <h3 class="font-semibold text-base">台湾线路</h3>
                         <p class="text-xs opacity-75 mt-0.5">baizhu.hppro1.hpnu.cn</p>
                     </div>
                 </div>
@@ -292,14 +270,14 @@
             </a>
         </main>
 
-        <!--分割线 修正特殊连字符bug opacity‑70 → opacity-70-->
+        <!--分割线-->
         <div class="my-7 flex items-center gap-4">
             <div class="brand-line"></div>
-            <span class="shrink-0 text-sm opacity-70">友情推荐站点</span>
+            <span class="shrink-0 text-sm opacity-70">其他推荐站点</span>
             <div class="brand-line"></div>
         </div>
 
-        <!--友情卡片：仅展示名称+备注，页面不显示网址，href保留跳转地址-->
+        <!--修改：名称改为栖光导航，增加【推荐】紫色标签，页面不显示网址 -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             <a href="http://dh.wsmywlkj.top" target="_blank" class="brand-card rounded-xl p-4 card-hover block">
                 <div class="flex items-center gap-3">
@@ -307,7 +285,7 @@
                         <i class="fa fa-link"></i>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-base">栖光导航<span class="tag-lila">推荐</span></h3>
+                        <h3 class="font-semibold text-base">栖光导航 <span class="tag-lila">推荐</span></h3>
                         <p class="text-xs opacity-75 mt-0.5">导航站</p>
                     </div>
                 </div>
@@ -326,10 +304,15 @@
 
         const sentenceList = [
             "山有白术，静候归途。",
-            "浮云流转，万事缓缓。",
+            "欲买桂花同载酒，终不似，少年游",
             "且随清风，赴前路山海。",
             "人间朝暮，叶落归期。",
             "心有安处，便是归途。",
+            "追风赶月莫停留，平芜尽处是春山",
+            "且将新火试新茶，诗酒趁年华",
+            "心有山海，静而无边",
+            "行而不辍，未来可期",
+            "星光不问赶路人，时光不负有心人"
             "云雾漫卷，静待相逢。"
         ];
 
